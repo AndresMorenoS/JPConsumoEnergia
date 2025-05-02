@@ -198,7 +198,47 @@ public class ConsumptionE {
 
         //Busca el cliente
         Optional<Client> optionalCliente = mBuscarClientePorId(idCliente);
-        if (optionalCliente.isPresent())
+        if (optionalCliente.isPresent()){
+            Client clienteEncontrado = optionalCliente.get();
+            console.printMessage("Cliente encontrado: " + clienteEncontrado.getName());
+            console.printMessage("Ingrese el ID del contador que desea modificar");
+            String idContador = console.readString();
+
+            Optional<Counter> optionalCounter = Optional.empty();
+            for (Counter c : clienteEncontrado.getCounters()){
+                if (c.getId().equalsIgnoreCase(idContador)){
+                    optionalCounter = Optional.of(c);
+                    break;
+                }
+            }
+            if (optionalCounter.isPresent()){
+                Counter contadorAEditar = optionalCounter.get();
+                console.printMessage("Contador encontrado ID:  " + contadorAEditar.getId());
+                console.printMessage("Ingrese los nuevos datos, deje en blanco si no desea cambiar nada");
+
+                try {
+                    console.printMessage("Nueva direccion [" + contadorAEditar.getAddress() + "]");
+                    String nuevaDireccion = console.readString();
+                    if (!nuevaDireccion.isBlank()){
+                        contadorAEditar.setAddress(nuevaDireccion);
+                        console.printMessage("Direccion actualizada");
+                    }
+                    console.printMessage("Nueva cuidad [" + contadorAEditar.getCity() + "]");
+                    String nuevaCiudad = console.readString();
+                    if (!nuevaCiudad.isBlank()){
+                        contadorAEditar.setCity(nuevaCiudad);
+                        console.printMessage("Ciudad actualizada");
+                    }
+                    console.printMessage("Contador actualizado");
+                } catch (Exception e){
+                    console.printMessage("Error al actualizar contador: " + e.getMessage());
+                }
+            } else {
+                console.printMessage("No se encontro el ID del contador" + idContador + "Para el cliente" + clienteEncontrado.getName());
+            }
+        } else {
+            console.printMessage("No se encontro el ID del cliente" + idCliente);
+        }
     }
 
 
