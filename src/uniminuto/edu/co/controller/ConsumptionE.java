@@ -6,7 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.InputMismatchException;
-
+import java.time.YearMonth;
+import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Random;
 public class ConsumptionE {
 
     private Console console;
@@ -240,6 +244,12 @@ public class ConsumptionE {
             console.printMessage("No se encontro el ID del cliente" + idCliente);
         }
     }
+
+
+ //
+
+
+
 
 
 
