@@ -180,11 +180,26 @@ public class ConsumptionE {
                 // Agregar el contador a la lista del cliente
                 clienteExistente.getCounters().add(nuevoContador);
                 console.printMessage("Contador agregado al cliente " + clienteExistente.getName());
-            } catch (Exception e)
+            } catch (Exception e) {
+                console.printMessage("Error al crear contador: " + e.getMessage());
+            }
+        } else {
+            //Cliente no encontrado
+            console.printMessage("Error: No se encontro ningun cliente con ese ID" + idCliente);
         }
 
     }
 
+    // Editar registrador
+    public void  editarContador(){
+        console.printMessage("Editar contador");
+        console.printMessage("Ingrese el ID del cliente dueño del contador");
+        String idCliente = console.readString();
+
+        //Busca el cliente
+        Optional<Client> optionalCliente = mBuscarClientePorId(idCliente);
+        if (optionalCliente.isPresent())
+    }
 
 
 
