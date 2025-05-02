@@ -20,18 +20,23 @@ public class Counter {
     // Date when the counter was created or registered
     private Date date;
 
+    private final List<RecCons> records;
     /**
      * Constructor to initialize a Counter with its ID, address, and city.
      * @param id Unique identifier for the counter.
      * @param address Address of the counter.
      * @param city City where the counter is located.
      */
-    public Counter(String id, String address, String city) {
+    public Counter(String id, String address, String city,RecCons records) {
         this.id = id;
         this.address = address;
         this.city = city;
+        this.records = new ArrayList<>();
     }
 
+    public void recordingCons(RecCons r){
+        records.add(r);
+    }
     // Getter for the counter's ID
     public String getId() {
         return id;
@@ -55,6 +60,18 @@ public class Counter {
     // Setter to update the counter's city
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public List<RecCons> getRecords() {
+        return records;
     }
 
     /**
