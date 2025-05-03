@@ -245,24 +245,82 @@ public class ConsumptionE {
         }
     }
 
+    // Cargar consumos 
+    public void cargarConsumosMes() {
+        console.printMessage("--- Cargar/Generar Consumos del Mes ---");
+        int year = 0;
+        int month = 0;
+    
+        // --- Pedir Año y Mes ---
+        try {
+            console.printMessage("Ingrese el año (ej: 2024):");
+            year = console.readInt();
+            console.printMessage("Ingrese el mes (1-12):");
+            month = console.readInt();
+    
+            if (month < 1 || month > 12) {
+                console.printMessage("Error: El mes debe estar entre 1 y 12.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            console.printMessage("Error: Año o mes inválido. Ingrese números.");
+            return;
+        } catch (Exception e) {
+             console.printMessage("Error al leer la entrada: " + e.getMessage());
+             return;
+        }
+    
+        console.printMessage("Generando consumos para " + month + "/" + year + " para todos los clientes y contadores...");
+    
+        // --- Lógica de Generación ---
+        YearMonth yearMonth = YearMonth.of(year, month);
+        int daysInMonth = yearMonth.lengthOfMonth();
+        Random random = new Random(); // Objeto para generar números aleatorios
+        long registrosGenerados = 0;
+        ZoneId zoneId = ZoneId.systemDefault(); // Usar la zona horaria del sistema    
+    
+        try {
+            // Iterar por cada cliente
+            for (Client cliente : this.clients) {
+                // Iterar por cada contador del cliente
+                for (Counter contador : cliente.getCounters()) {
+                    // Iterar por cada día del mes
+                    for (int day = 1; day <= daysInMonth; day++) {
+                        // Iterar por cada hora del día (0 a 23)
+                        for (int hour = 0; hour < 24; hour++) {
+    
+                            // Crear la fecha y hora exacta
+                            LocalDateTime ldt = LocalDateTime.of(year, month, day, hour, 0, 0);
+                            Instant timestamp = ldt.atZone(zoneId).toInstant();
+    
+                            // Generar un valor de consumo aleatorio (ej: entre 50 y 950 kWh)
+                            double consumoGenerado = 50 + (random.nextDouble() * 900); // Rango simple 50-950
+    
+                            // Crear el objeto Consumption
+                            Consumption nuevoConsumo = new Consumption();
+                            nuevoConsumo.setIdCounter(contador.getId()); // ID del contador actual
+                            nuevoConsumo.setInstant(timestamp);        // Fecha y hora
+                            nuevoConsumo.setAmount(consumoGenerado);   // Valor aleatorio
+    
+                            // Añadir a la lista general de consumos
+                            this.consumptions.add(nuevoConsumo);
+                            registrosGenerados++;
+                        } 
+                    } 
+                     
+                     
+                } 
+            } 
+    
+            console.printMessage("\n¡Proceso completado! Se generaron " + registrosGenerados + " registros de consumo para " + month + "/" + year + ".");
+            console.printMessage("Total de registros de consumo almacenados ahora: " + this.consumptions.size());
+    
+        } catch (Exception e) {
+            console.printMessage("Error durante la generación de consumos: " + e.getMessage());
+           
+        }
+    }
+    
+}	
 
- //
-
-
-
-
-
-
-    /*
-    La aplicación o software desarrollado debe realizar los siguientes procesos:
-1. Crear cliente
-2. Editar cliente (Cambiar atributos excepto el número único de identificación.)
-3. Crear registrador o contador
-4. Editar registrador (Cambiar sus atributos excepto su número de identificación)
-5. Cargar de forma automática los consumos de todos los clientes en un mes –
-año respectivo.
-     */
-
-
-
-}
+    
