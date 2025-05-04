@@ -1,7 +1,7 @@
 package uniminuto.edu.co.controller;
 
 import uniminuto.edu.co.models.*;
-import uniminuto.edu.co.views.Console;
+import uniminuto.edu.co.views.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

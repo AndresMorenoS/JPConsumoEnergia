@@ -1,9 +1,9 @@
 package uniminuto.edu.co;
 
 import org.w3c.dom.ls.LSOutput;
-import uniminuto.edu.co.controller.ConsumptionE;
-import uniminuto.edu.co.views.Console;
-import uniminuto.edu.co.models.Consumption;
+import uniminuto.edu.co.controller.*;
+import uniminuto.edu.co.views.*;
+import uniminuto.edu.co.models.*;
 
 public class App {
     public static void main(String[] args) {
@@ -55,19 +55,9 @@ public class App {
             } catch (Exception e) {
                 console.printMessage("Ocurrió un error inesperado: " + e.getMessage());
             }
-        int daysMonth = 30;
-        int hoursDay = 24;
-        Consumption consumClient = new Consumption(daysMonth ,hoursDay){
-        consumClient.setIdCounter("001");
-        //Simulate some consumption (day, hour, kWh)
-        consumClient.mRecordConsumption(1, 5, 150);
-        consumClient.mRecordConsumption(10, 10, 450);
-        consumClient.mRecordConsumption(10, 20, 800);
 
-        System.out.printMessage("Consumo Dia 1, 5am: "+ consumClient.mGetConsumptionByqDayandHour(1, 5)+" kwh");
-            };
+            console.destroy(); //
+
         }
-        console.destroy(); //
-
     }
 }
