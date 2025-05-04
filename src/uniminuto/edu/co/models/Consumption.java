@@ -1,85 +1,78 @@
 package uniminuto.edu.co.models;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-
-
-/**
- * Represents a Consumption entity, which tracks the amount of consumption
- * associated with a specific counter at a particular instant in time.
- */
 public class Consumption {
-    // The timestamp when the consumption was recorded
-    private Instant instant;
-    // The amount of consumption (e.g., energy, water, etc.)
-    private double amount;
-    // The unique identifier of the counter associated with this consumption
+
+    // Matrix to store energy consumption by day and hour
+    private double[][] consumptionMatrix;
+    // Number of hours in a day
+    private final int hours;
+    // Number of days in a month
+    private int days;
+    // Unique identifier for the associated meter
     private String idCounter;
 
     private double kwh;
 
-    public void RecordCons(Instant instant, double kwh, String idCounter){
-        this.instant = instant;
-        this.kwh = kwh;
+    // Constructor to initialize the matrix
+    public Consumption(int days, int hours) {
+        this.hours = hours;
+        this.consumptionMatrix = new double[days][hours];
+    }
+
+    /**
+     * Records energy consumption in the matrix for a specific day and hour, and updates the meter ID.
+     * @param day Day of the month (1-31).
+     * @param hour Hour of the day (0-23).
+     * @param kwh Amount of kilowatt-hours consumed.
+     * @param idCounter Meter identifier.
+     */
+    public void mRecordConsumptionWithId(int day, int hour, double kwh, String idCounter) {
+        // Validate that the day and hour are within the allowed range
+        if (day < 1 || day > consumptionMatrix.length || hour < 0 || hour >= hours) {
+            throw new IllegalArgumentException("Day or hour out of range.");
+        }
+        // Update the matrix and set the meter identifier
+        this.consumptionMatrix[day - 1][hour] = kwh;
         this.idCounter = idCounter;
     }
 
-    public void recordConsuption(Instant instant , double kwh){
-        this.instant = instant;
-        this.kwh = kwh;
-    }
     /**
-     * Gets the amount of consumption.
-     * @return The amount of consumption.
+     * Records energy consumption in the matrix for a specific day and hour (without updating the meter ID).
+     * @param day Day of the month (1-31).
+     * @param hour Hour of the day (0-23).
+     * @param kwh Amount of kilowatt-hours consumed.
      */
-    public Double getAmount() {
-        return amount;
-    }
-
-    /**
-     * Sets the amount of consumption.
-     * @param amount The amount of consumption to set.
-     */
-    public void setAmount(Double amount) {
-        this.amount = amount;
+    public void mRecordConsumption(int day, int hour, double kwh) {
+        // Validate that the day and hour are within the allowed range
+        if (day < 1 || day > consumptionMatrix.length || hour < 0 || hour >= hours) {
+            throw new IllegalArgumentException("Day or hour out of range.");
+        }
+        // Update the matrix
+        this.consumptionMatrix[day - 1][hour] = kwh;
     }
 
     /**
-     * Gets the ID of the counter associated with this consumption.
-     * @return The counter ID.
+     * Retrieves the energy consumption recorded for a specific day and hour.
+     * @param day Day of the month (1-31).
+     * @param hour Hour of the day (0-23).
+     * @return Energy consumption in kWh.
      */
+    public double mGetConsumptionByDayAndHour(int day, int hour) {
+        // Validate that the day and hour are within the allowed range
+        if (day < 1 || day > consumptionMatrix.length || hour < 0 || hour >= hours) {
+            throw new IllegalArgumentException("Day or hour out of range.");
+        }
+        // Return the consumption value from the matrix
+        return this.consumptionMatrix[day - 1][hour];
+    }
+
+    // Getters and setters for other attributes
     public String getIdCounter() {
         return idCounter;
     }
 
-
-    /**
-     * Sets the ID of the counter associated with this consumption.
-     * @param idCounter The counter ID to set.
-     */
     public void setIdCounter(String idCounter) {
         this.idCounter = idCounter;
-    }
-
-    /**
-     * Gets the timestamp of when the consumption was recorded.
-     * @return The timestamp as an Instant.
-     */
-    public Instant getInstant() {
-        return instant;
-    }
-
-    /**
-     * Sets the timestamp of when the consumption was recorded.
-     * @param instant The timestamp to set.
-     */
-    public void setInstant(Instant instant) {
-        this.instant = instant;
     }
 
     public double getKwh() {
@@ -88,48 +81,5 @@ public class Consumption {
 
     public void setKwh(double kwh) {
         this.kwh = kwh;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public static class ConsumptionService {
-        /**
-         * Filters consumptions for a specific month and year.
-         * @param allConsumptions Complete list of consumptions.
-         *@param month Month (1-12).
-         * @param year Year (e.g., 2025).
-         * @return List of filtered consumptions.
-         */
-        public static List<Consumption> loadMonthlyConsumption(List<Consumption> allConsumptions, int month, int year) {
-            return allConsumptions.stream() 
-                .filter(c -> {                  
-                    if (c == null || c.getInstant() == null) {
-                        return false; 
-                    } 
-                    LocalDateTime dateTime = LocalDateTime.ofInstant(c.getInstant(), ZoneId.systemDefault());                   
-                    return dateTime.getMonthValue() == month && dateTime.getYear() == year;   
-                }) 
-                .collect(Collectors.toList()); 
-        } 
-    
-    }
-    /**
-     * Calcula la tarifa a pagar para un consumo según la hora y kWh.
-     * @param c Objeto consumo.
-     * @return Valor total a pagar.
-     */
-    public static double calculateTarif(Consumption c){
-        int hour = LocalDateTime.ofInstant(c.getInstant(), ZoneId.systemDefault()).getHour();
-        double kwh = c.getKwh();
-        if (hour <= 6 && kwh >= 100 && kwh <= 300) {
-            return kwh * 200;
-        } else if (hour >= 7 && hour <= 17 && kwh > 300 && kwh <= 600) {
-            return kwh * 300;
-        } else if (hour >= 18 && kwh > 600 && kwh <= 1000) return kwh * 500;
-        else {
-            return 0;
-        }
     }
 }
