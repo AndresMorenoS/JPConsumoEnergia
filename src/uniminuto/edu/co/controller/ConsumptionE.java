@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.InputMismatchException;
 import java.time.YearMonth;
-import java.time.LocalDateTime;
-import java.time.Instant;
-import java.time.ZoneId;
+//import java.time.LocalDateTime;
+//import java.time.Instant;
+//import java.time.ZoneId;
 import java.util.Random;
 public class ConsumptionE {
 
@@ -246,81 +246,66 @@ public class ConsumptionE {
     }
 
     // Cargar consumos 
-    public void cargarConsumosMes() {
-        console.printMessage("--- Cargar/Generar Consumos del Mes ---");
-        int year = 0;
-        int month = 0;
-    
-        // --- Pedir Año y Mes ---
-        try {
-            console.printMessage("Ingrese el año (ej: 2024):");
-            year = console.readInt();
-            console.printMessage("Ingrese el mes (1-12):");
-            month = console.readInt();
-    
-            if (month < 1 || month > 12) {
-                console.printMessage("Error: El mes debe estar entre 1 y 12.");
-                return;
-            }
-        } catch (NumberFormatException e) {
-            console.printMessage("Error: Año o mes inválido. Ingrese números.");
+    // En JPConsumoEnergia/src/uniminuto/edu/co/controller/ConsumptionE.java
+
+public void cargarConsumosMes() {
+    console.printMessage("--- Cargar/Generar Consumos del Mes ---");
+    int year = 0;
+    int month = 0;
+
+    try {
+        console.printMessage("Ingrese el año: ");
+        year = console.readInt();
+        console.printMessage("Ingrese el mes: ");
+        month = console.readInt();
+        if (month < 1 || month > 12) {
+            console.printMessage("Error: El mes debe estar entre 1 y 12.");
             return;
-        } catch (Exception e) {
-             console.printMessage("Error al leer la entrada: " + e.getMessage());
-             return;
         }
-    
-        console.printMessage("Generando consumos para " + month + "/" + year + " para todos los clientes y contadores...");
-    
-        // --- Lógica de Generación ---
-        YearMonth yearMonth = YearMonth.of(year, month);
-        int daysInMonth = yearMonth.lengthOfMonth();
-        Random random = new Random(); // Objeto para generar números aleatorios
-        long registrosGenerados = 0;
-        ZoneId zoneId = ZoneId.systemDefault(); // Usar la zona horaria del sistema    
-    
-        try {
-            // Iterar por cada cliente
-            for (Client cliente : this.clients) {
-                // Iterar por cada contador del cliente
-                for (Counter contador : cliente.getCounters()) {
-                    // Iterar por cada día del mes
-                    for (int day = 1; day <= daysInMonth; day++) {
-                        // Iterar por cada hora del día (0 a 23)
-                        for (int hour = 0; hour < 24; hour++) {
-    
-                            // Crear la fecha y hora exacta
-                            LocalDateTime ldt = LocalDateTime.of(year, month, day, hour, 0, 0);
-                            Instant timestamp = ldt.atZone(zoneId).toInstant();
-    
-                            // Generar un valor de consumo aleatorio (ej: entre 50 y 950 kWh)
-                            double consumoGenerado = 50 + (random.nextDouble() * 900); // Rango simple 50-950
-    
-                            // Crear el objeto Consumption
-                            Consumption nuevoConsumo = new Consumption();
-                            nuevoConsumo.setIdCounter(contador.getId()); // ID del contador actual
-                            nuevoConsumo.setInstant(timestamp);        // Fecha y hora
-                            nuevoConsumo.setAmount(consumoGenerado);   // Valor aleatorio
-    
-                            // Añadir a la lista general de consumos
-                            this.consumptions.add(nuevoConsumo);
-                            registrosGenerados++;
-                        } 
-                    } 
-                     
-                     
-                } 
-            } 
-    
-            console.printMessage("\n¡Proceso completado! Se generaron " + registrosGenerados + " registros de consumo para " + month + "/" + year + ".");
-            console.printMessage("Total de registros de consumo almacenados ahora: " + this.consumptions.size());
-    
-        } catch (Exception e) {
-            console.printMessage("Error durante la generación de consumos: " + e.getMessage());
-           
-        }
+    } catch (NumberFormatException e) {
+        console.printMessage("Error: Año o mes inválido. Ingrese números.");
+        return;
+    } catch (Exception e) {
+         console.printMessage("Error al leer la entrada: " + e.getMessage());
+         return;
     }
-    
-}	
+
+    console.printMessage("Generando consumos para " + month + "/" + year + " para todos los clientes y contadores...");
+
+    YearMonth yearMonth = YearMonth.of(year, month);
+    int daysInMonth = yearMonth.lengthOfMonth();
+    Random random = new Random();
+    long registrosGenerados = 0;
+    int contadoresProcesados = 0;
+
+    try {
+        for (Client cliente : this.clients) {
+            for (Counter contador : cliente.getCounters()) {
+                contadoresProcesados++;
+                Consumption consumoMensual = new Consumption(daysInMonth, 24);
+                consumoMensual.setIdCounter(contador.getId());
+
+                for (int day = 1; day <= daysInMonth; day++) {
+                    for (int hour = 0; hour < 24; hour++) {
+                        double consumoGenerado = 50 + (random.nextDouble() * 900);
+                        registrosGenerados++;
+
+                        consumoMensual.mRecordConsumption(day, hour, consumoGenerado);
+                    }
+                }
+                contador.recordingCons(consumoMensual);
+            }
+        }
+
+        console.printMessage("\n¡Proceso completado! Se generaron " + registrosGenerados + " valores horarios de consumo para " + month + "/" + year + ".");
+        console.printMessage("Se crearon y llenaron matrices de consumo para " + contadoresProcesados + " contadores.");
+
+    } catch (Exception e) {
+        console.printMessage("Error durante la generación de consumos: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
+
+}
 
     
