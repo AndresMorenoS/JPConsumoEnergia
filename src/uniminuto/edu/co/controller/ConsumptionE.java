@@ -55,7 +55,7 @@ public class ConsumptionE {
 
 
             //Crear primer contador
-            Counter primerContador = new Counter(contadorId, contadorDireccion, contadorCiudad, null);
+            Counter primerContador = new Counter(contadorId, contadorDireccion, contadorCiudad);
 
             //Crear Cliente
             Client nuevoCliente = new Client(clientId, nombre, email, direccion, tipoDocumento, primerContador);
@@ -179,7 +179,7 @@ public class ConsumptionE {
                 String nuevoContadorCiudad = console.readString();
 
                 // Objeto Counter
-                Counter nuevoContador = new Counter(nuevoContadorId, nuevoContadorDireccion, nuevoContadorCiudad, null);
+                Counter nuevoContador = new Counter(nuevoContadorId, nuevoContadorDireccion, nuevoContadorCiudad);
 
                 // Agregar el contador a la lista del cliente
                 clienteExistente.getCounters().add(nuevoContador);

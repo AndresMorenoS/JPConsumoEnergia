@@ -102,15 +102,18 @@ public class Consumption {
          * @param year Year (e.g., 2025).
          * @return List of filtered consumptions.
          */
-        public static List<Consumption> loadMonthlyConsumption(List<Consumption> allConsumptions, int month, int year){
-            return allConsumptions.stream().toList();
-            calculateTarif(c->{
-                LocalDateTime dateTime = LocalDateTime.ofInstant(c.getInstant(), ZoneId.systemDefault());
-                return dateTime.getMonthValue() == month && dateTime.getYear() == year ;
-
-            })
-            .collect(Collectors.toList());
-        }
+        public static List<Consumption> loadMonthlyConsumption(List<Consumption> allConsumptions, int month, int year) {
+            return allConsumptions.stream() 
+                .filter(c -> {                  
+                    if (c == null || c.getInstant() == null) {
+                        return false; 
+                    } 
+                    LocalDateTime dateTime = LocalDateTime.ofInstant(c.getInstant(), ZoneId.systemDefault());                   
+                    return dateTime.getMonthValue() == month && dateTime.getYear() == year;   
+                }) 
+                .collect(Collectors.toList()); 
+        } 
+    
     }
     /**
      * Calcula la tarifa a pagar para un consumo según la hora y kWh.
@@ -119,7 +122,7 @@ public class Consumption {
      */
     public static double calculateTarif(Consumption c){
         int hour = LocalDateTime.ofInstant(c.getInstant(), ZoneId.systemDefault()).getHour();
-        double kwh = c.getkwh();
+        double kwh = c.getKwh();
         if (hour <= 6 && kwh >= 100 && kwh <= 300) {
             return kwh * 200;
         } else if (hour >= 7 && hour <= 17 && kwh > 300 && kwh <= 600) {

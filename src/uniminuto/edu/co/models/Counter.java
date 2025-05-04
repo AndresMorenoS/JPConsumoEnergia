@@ -1,5 +1,7 @@
 package uniminuto.edu.co.models;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.time.temporal.ChronoField;
 import java.util.Date;
 
@@ -20,21 +22,21 @@ public class Counter {
     // Date when the counter was created or registered
     private Date date;
 
-    private final List<RecCons> records;
+    private final List<Consumption> records;
     /**
      * Constructor to initialize a Counter with its ID, address, and city.
      * @param id Unique identifier for the counter.
      * @param address Address of the counter.
      * @param city City where the counter is located.
      */
-    public Counter(String id, String address, String city,RecCons records) {
+    public Counter(String id, String address, String city) {
         this.id = id;
         this.address = address;
         this.city = city;
         this.records = new ArrayList<>();
     }
 
-    public void recordingCons(RecCons r){
+    public void recordingCons(Consumption r){
         records.add(r);
     }
     // Getter for the counter's ID
@@ -70,7 +72,7 @@ public class Counter {
         this.date = date;
     }
 
-    public List<RecCons> getRecords() {
+    public List<Consumption> getRecords() {
         return records;
     }
 
