@@ -1,10 +1,13 @@
 package uniminuto.edu.co.models;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+
 
 /**
  * Represents a Consumption entity, which tracks the amount of consumption
@@ -20,51 +23,16 @@ public class Consumption {
 
     private double kwh;
 
+    public void RecordCons(Instant instant, double kwh, String idCounter){
+        this.instant = instant;
+        this.kwh = kwh;
+        this.idCounter = idCounter;
+    }
 
-    private LocalDateTime dateTime;
-    public void RecordCons(Instant instant, double kwh){
+    public void recordConsuption(Instant instant , double kwh){
         this.instant = instant;
         this.kwh = kwh;
     }
-
-        /**
-         * Gets the calculate consumption
-         * @return the calculate of consumption
-         */
-    public double calculatePrice() {
-        int hour = dateTime.getHour();
-            if (hour <= 6 && kwh >= 100 && kwh <= 300) {
-                return kwh * 200;
-            } else if (hour >= 7 && hour <= 17 && kwh > 300 && kwh <= 600) {
-                return kwh * 300;
-            } else if (hour >= 18 && kwh > 600 && kwh <= 1000) {
-                return kwh * 500;
-            } else {
-                return 0;
-            }
-    }
-    public <ClientnotReg, RecordEnergy> double calculateConsum(List<ClientnotReg> clients, int year, int month, double consum){
-        double total = 0;
-        for (ClientnotReg client : clients) {
-            for (RecordEnergy record : client.getClass()) {
-                int days = LocalDate.of(year, month, 1).lengthOfMonth();
-
-                for (int day = 1; day <= days; day++) {
-                    for (int hour = 0; hour < 24; hour++) {
-                        LocalDateTime dateTime = LocalDateTime.of(year, month, day, hour, 0);
-
-                        Consumption c = new Consumption();
-                        c.RecordCons(Instant.from(dateTime), consum);
-                        c.setIdCounter(record.getClass());
-                        double valor = c.calculatePrice();
-                        total += amount;
-                    }
-                }
-            }
-        }
-        return total;
-    }
-
     /**
      * Gets the amount of consumption.
      * @return The amount of consumption.
@@ -112,8 +80,53 @@ public class Consumption {
      */
     public void setInstant(Instant instant) {
         this.instant = instant;
-
-
     }
 
+    public double getKwh() {
+        return kwh;
+    }
+
+    public void setKwh(double kwh) {
+        this.kwh = kwh;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public static class ConsumptionService {
+        /**
+         * Filters consumptions for a specific month and year.
+         * @param allConsumptions Complete list of consumptions.
+         *@param month Month (1-12).
+         * @param year Year (e.g., 2025).
+         * @return List of filtered consumptions.
+         */
+        public static List<Consumption> loadMonthlyConsumption(List<Consumption> allConsumptions, int month, int year){
+            return allConsumptions.stream().toList();
+            calculateTarif(c->{
+                LocalDateTime dateTime = LocalDateTime.ofInstant(c.getInstant(), ZoneId.systemDefault());
+                return dateTime.getMonthValue() == month && dateTime.getYear() == year ;
+
+            })
+            .collect(Collectors.toList());
+        }
+    }
+    /**
+     * Calcula la tarifa a pagar para un consumo según la hora y kWh.
+     * @param c Objeto consumo.
+     * @return Valor total a pagar.
+     */
+    public static double calculateTarif(Consumption c){
+        int hour = LocalDateTime.ofInstant(c.getInstant(), ZoneId.systemDefault()).getHour();
+        double kwh = c.getkwh();
+        if (hour <= 6 && kwh >= 100 && kwh <= 300) {
+            return kwh * 200;
+        } else if (hour >= 7 && hour <= 17 && kwh > 300 && kwh <= 600) {
+            return kwh * 300;
+        } else if (hour >= 18 && kwh > 600 && kwh <= 1000) return kwh * 500;
+        else {
+            return 0;
+        }
+    }
 }
