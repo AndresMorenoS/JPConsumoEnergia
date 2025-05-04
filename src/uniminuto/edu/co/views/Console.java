@@ -1,7 +1,6 @@
 package uniminuto.edu.co.views;
 
 import uniminuto.edu.co.models.Client;
-
 import java.math.BigInteger;
 import java.util.Scanner;
 
