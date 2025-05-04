@@ -82,4 +82,39 @@ public class Consumption {
     public void setKwh(double kwh) {
         this.kwh = kwh;
     }
+
+    public double calculateTariff(int day, int hour){
+        double kwh = mGetConsumptionByDayAndHour(day,hour);
+        if (kwh == 0)return 0;
+
+        if (hour <= 6 && kwh >= 100 && kwh <= 300){
+            return kwh * 200;
+        } else if (hour >= 7 && hour <= 17 && kwh > 300 && kwh <= 600){
+            return kwh * 300;
+        } else if (hour >= 18 && hour <= 23 && kwh > 600 && kwh <= 1000){
+            return kwh * 500;
+        }else {
+            return 0;
+        }
+    }
+    public double getTotalMonthlyKwh(){
+        double total = 0;
+        for(int day = 0; day < consumptionMatrix.length; day++){
+            for (int hour = 0; hour < hours; hour++){
+                total+= consumptionMatrix[day][hour];
+            }
+        }
+        return total;
+    }
+
+    public double getTotalMonthlyPayment(){
+        double total = 0;
+        for(int day = 0; day < consumptionMatrix.length; day++){
+            for( int hour = 0; hour < hours; hour++){
+                total += calculateTariff(day+1,hour);
+            }
+        }
+        return total;
+    }
+
 }
