@@ -56,8 +56,9 @@ public class App {
                 console.printMessage("Ocurrió un error inesperado: " + e.getMessage());
             }
 
-            console.destroy(); //
+            
 
         }
+        console.destroy(); //
     }
 }
